@@ -18,7 +18,7 @@ export default {
     baseSeparator: '-',
   },
   theme: {
-    'primary-color':'rgb(89, 102, 243)',
+    'primary-color':'#1eaa39',
   },
 
   model: {},
