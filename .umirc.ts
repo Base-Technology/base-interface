@@ -18,9 +18,8 @@ export default {
     baseSeparator: '-',
   },
   theme: {
-    'primary-color':'#1eaa39',
+    'primary-color':'#422DDD',
   },
-
   model: {},
   routes: [
     { path: '/', component: '@/pages/Message' },

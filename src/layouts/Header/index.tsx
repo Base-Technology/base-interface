@@ -2,7 +2,10 @@ import React from 'react'
 import { Menu, Dropdown, Button } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
 import cbridge from '../assets/cbridge.png'
-import sendFinance from '@/assets/logo.svg'
+import sendFinance from '@/assets/Base.svg'
+import  {ReactComponent as  Dark} from '@/assets/dark.svg'
+import  {ReactComponent as  Light} from '@/assets/light.svg'
+import  {ReactComponent as  Logo} from '@/assets/logo.svg'
 import Tabs from './Tabs';
 import styles from './index.less'
 
@@ -39,11 +42,18 @@ export default function Header() {
       ]}
       className="menu" style={{ textAlign: 'center', backgroundColor: 'rgb(35, 37, 48)', borderRadius: '12px' }} />
   );
+  const [dark,setDark]=React.useState(false);
+  const switchTheme=(flag:boolean)=>{
+    setDark(flag);
+    flag&& (document.body.className='dark')||(document.body.className='');
+  }
   return (
     <header style={{ padding: '0 30px' }}>
 
       <div className='left' style={{ display: 'flex', alignItems: 'center' }}>
-        <img src={sendFinance} className='topImage' ></img>
+        {/* <img src={sendFinance} className='topImage' ></img> */}
+        <Logo className='topImage' />
+        
         {/* <Button className='btn'>1</Button>
                     <Button className='btn'>1</Button>
                     <Button className='btn'>1</Button> */}
@@ -82,6 +92,10 @@ export default function Header() {
           </Menu>
       </div>
       <div className='right'>
+       
+        {/* <span>
+        {dark&&<Light style={{fill:'#ffffff'}} onClick={()=>switchTheme(false)}/> || <Dark onClick={()=>switchTheme(true)}/>}
+        </span> */}
         <Button type='primary' className='topConnect' style={{ marginTop: '3px' }}>Connect Wallet</Button>
       </div>
     </header>

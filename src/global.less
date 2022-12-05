@@ -1,6 +1,7 @@
 @import '~antd/dist/antd.less';
+@import './theme.less';
 
-@bgcolor: black;
+@bgcolor: var(--bg);
 @font-face {
     font-family: Karla;
     src: url('/Karla.ttf');
@@ -8,7 +9,7 @@
 body {
     margin: 0;
     padding: 0;
-    background: #040000;
+    background: var(--bg);
      font-family: 'Karla', sans-serif;
 }
 
@@ -63,6 +64,7 @@ header {
     .topImage {
         width: 120px;
         height: 50px;
+        fill:var(--logocolor)
         // margin-right: 8px;
         // background: white;
         // color: white;
@@ -110,7 +112,7 @@ footer {
     }
 }
 .ant-switch-handle::before{
-    box-shadow: 0 2px 4px 0 #1eaa39;
+    box-shadow: 0 2px 4px 0 #422DDD;
 }
 .chooseBtn {
     .ant-radio-button-wrapper:first-child {
@@ -195,7 +197,7 @@ input[type="radio"] {
     max-width: 1024px;
     margin: auto;
     color: #ffffff;
-    background: rgba(32, 33, 33, 0.8);
+    background: rgba(18,18,18,1);
     overflow: hidden;
     height: calc(100vh - 200px);
     margin-top: 30px;
@@ -557,7 +559,7 @@ input[type="radio"] {
   border-top: 2px solid transparent;
 }
 .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab-active {
-  border-top: 2px solid #1eaa39;
+  border-top: 2px solid #422DDD;
   font-weight: bold;
 }
 // tabs
@@ -566,5 +568,5 @@ input[type="radio"] {
     background-color:#ffffff;
 }
 .ant-switch-checked{
-    background-color:#1eaa39;
+    background-color:#422DDD;
 }
