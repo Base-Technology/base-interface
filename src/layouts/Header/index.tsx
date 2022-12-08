@@ -92,9 +92,8 @@ export default function Header() {
         </Menu>
       </div>
       <div className='right'>
-
-        {dark && <Dark style={{ width: '30px' }} onClick={() => switchTheme(false)} /> || <Light style={{ fill: '#ffffff', width: '30px' }} onClick={() => switchTheme(true)} />}
         <Button type='primary' className='topConnect'>Connect Wallet</Button>
+        {!dark && <Dark style={{ fill: '#ffffff', width: '30px' }} onClick={() => switchTheme(true)} /> || <Light style={{ width: '30px' }} onClick={() => switchTheme(false)} />}
       </div>
     </header>
   )
