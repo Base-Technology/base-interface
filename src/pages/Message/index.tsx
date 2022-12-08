@@ -82,7 +82,7 @@ export default function Message() {
                 inputRef.current.focus({
                   cursor: 'start',
                 });
-              }} style={{ color: '#ffffff', cursor: 'pointer' }} />} /></div>
+              }} style={{ color: 'var(--messagecolor)', cursor: 'pointer' }} />} /></div>
               <div ><TeamOutlined />&nbsp;<EditOutlined onClick={() => setAction(0)} /></div>
             </div>
             <div className='msg_list'>
@@ -128,7 +128,7 @@ export default function Message() {
 
                   </div>
                   <br />
-                  <Button style={{width:'100%'}} type='primary' size='large' className='cardButton'>Send Message</Button>
+                  <Button style={{ width: '100%' }} type='primary' size='large' className='cardButton'>Send Message</Button>
                 </div>
               </>
             }
