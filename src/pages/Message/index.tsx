@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { Button, Card, InputNumber, Input, Divider, Switch } from 'antd';
+import { Button, Card, InputNumber, Input, Divider, Switch, Drawer } from 'antd';
 import { Menu, Space } from 'antd';
-import { EditOutlined, SettingOutlined, TeamOutlined, PlusOutlined, ArrowLeftOutlined, MessageOutlined, UnlockOutlined, SearchOutlined } from '@ant-design/icons';
+import { EditOutlined, SettingOutlined, TeamOutlined, PlusOutlined, ArrowLeftOutlined, MessageOutlined, UnlockOutlined, SearchOutlined, CloseOutlined, SwapOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import MessageItem from './MessageItem';
 import DetailItem from './DetailItem';
 import HeadImg from './HeadImg';
-
+import './index.less';
 const { TextArea } = Input;
 export default function Message() {
 
@@ -69,9 +69,7 @@ export default function Message() {
   }, {
     checked: false,
   }]);
-  // useEffect(()=>{
-
-  // },)
+  const [openChain, setOpenChain] = useState(false);
   return (
     <div>
       <div className='message'>
@@ -110,9 +108,19 @@ export default function Message() {
                 <div className='header msg_flex msg_flex_between msg_items_center msg_border_b'>
                   <div onClick={() => setAction(1)}><ArrowLeftOutlined />&nbsp;&nbsp;&nbsp;&nbsp;Send Message</div>
                 </div>
-                <div className='msg-max-w-sm'>
+                {/* <div className='tokenwrap'> */}
+                <div className='msg-max-w-sm tokenwrap'>
                   {/* <h1 className='msg-mt-8 msg-mb-4'>Create thread</h1> */}
-                  <p>Enter recipient address</p>
+                  <p style={{ marginTop: '15px' }}>Select Target Chain</p>
+                  <div className='chainselect flex flex-between flex-align-center'
+                   onClick={() => setOpenChain(true)}>
+                    <div>
+                      <img style={{ width: '30px',marginRight:'20px' }} src='/polygon.svg' />
+                      <span>Polygon</span>
+                    </div>
+                    <SwapOutlined />
+                  </div>
+                  <p>Enter Recipient Address</p>
                   <Input style={{ color: 'white', background: '#040000', height: '50px' }} />
                   {/* <p className='mst-opacity-50 msg-font-base'>Link twitter twitter.cardinal.so and domain naming.bonfida.org</p> */}
                   <Divider className='mst-opacity-50' style={{ background: '#ffffff' }} />
@@ -128,8 +136,46 @@ export default function Message() {
 
                   </div>
                   <br />
-                  <Button style={{ width: '100%' }} type='primary' size='large' className='cardButton'>Send Message</Button>
+                  {/* </div> */}
+                  <Drawer
+                    bodyStyle={{
+                      background: '#252525'
+                    }}
+                    headerStyle={{ display: 'none' }}
+                    width="100%"
+                    height="100%"
+                    title="Basic Drawer"
+                    placement="bottom"
+                    getContainer={false}
+                    open={openChain}
+                  >
+                    <div className='flex flex-between'>
+                      <span>Select Target Chain</span>
+                      <CloseOutlined onClick={() => setOpenChain(false)} />
+                    </div>
+                    <div className='tokenlist'>
+                      <div
+                        className='item'
+                      >
+                        <div>
+                          <img src='/polygon.svg' />
+                          <p>Polygon</p>
+                        </div>
+                      </div>
+                      <div
+                        className='item'
+                      >
+                        <div>
+                          <img src='/optimism.png' />
+                          <p>Optimism</p>
+                        </div>
+                      </div>
+                    </div>
+                  </Drawer>
                 </div>
+
+                <Button style={{ width: '384px', margin: '20px auto' }} type='primary' size='large' className='cardButton'>Send Message</Button>
+
               </>
             }
             {/* 聊天记录 */}
