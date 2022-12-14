@@ -70,6 +70,25 @@ export default function Message() {
     checked: false,
   }]);
   const [openChain, setOpenChain] = useState(false);
+  const chainList = [
+    {
+      'symbol': 'Ethereum',
+      'icon': '/eth.svg'
+    },
+    {
+      'symbol': 'BNB Chain',
+      'icon': '/bnb.svg'
+    },
+    {
+      'symbol': 'Polygon',
+      'icon': '/polygon.svg'
+    },
+    {
+      'symbol': 'Optimism',
+      'icon': '/optimism.png'
+    }
+  ];
+  const [currentChain, setCurrentChain] = useState(0);
   return (
     <div>
       <div className='message'>
@@ -113,15 +132,15 @@ export default function Message() {
                   {/* <h1 className='msg-mt-8 msg-mb-4'>Create thread</h1> */}
                   <p style={{ marginTop: '15px' }}>Select Target Chain</p>
                   <div className='chainselect flex flex-between flex-align-center'
-                   onClick={() => setOpenChain(true)}>
+                    onClick={() => setOpenChain(true)}>
                     <div>
-                      <img style={{ width: '30px',marginRight:'20px' }} src='/polygon.svg' />
-                      <span>Polygon</span>
+                      <img style={{ width: '30px', marginRight: '20px' }} src={chainList[currentChain].icon} />
+                      <span>{chainList[currentChain].symbol}</span>
                     </div>
                     <SwapOutlined />
                   </div>
                   <p>Enter Recipient Address</p>
-                  <Input style={{ color: 'white', background: '#040000', height: '50px' }} />
+                  <Input style={{ color: 'white', background: '#040000', height: '50px', border: '1px solid var(--bordercolor)' }} />
                   {/* <p className='mst-opacity-50 msg-font-base'>Link twitter twitter.cardinal.so and domain naming.bonfida.org</p> */}
                   <Divider className='mst-opacity-50' style={{ background: '#ffffff' }} />
                   <div className='msg_flex msg_flex_between msg_bg_subtle_night msg-py-3 msg-px-4 msg-rounded-2xl'>
@@ -139,7 +158,7 @@ export default function Message() {
                   {/* </div> */}
                   <Drawer
                     bodyStyle={{
-                      background: '#252525'
+                      background: 'var(--selectbg)'
                     }}
                     headerStyle={{ display: 'none' }}
                     width="100%"
@@ -148,28 +167,24 @@ export default function Message() {
                     placement="bottom"
                     getContainer={false}
                     open={openChain}
+                    mask={false}
                   >
                     <div className='flex flex-between'>
                       <span>Select Target Chain</span>
                       <CloseOutlined onClick={() => setOpenChain(false)} />
                     </div>
                     <div className='tokenlist'>
-                      <div
-                        className='item'
-                      >
-                        <div>
-                          <img src='/polygon.svg' />
-                          <p>Polygon</p>
-                        </div>
-                      </div>
-                      <div
-                        className='item'
-                      >
-                        <div>
-                          <img src='/optimism.png' />
-                          <p>Optimism</p>
-                        </div>
-                      </div>
+                      {
+                        chainList.map((item, index) => <div
+                          className='item'
+                          onClick={() => { setCurrentChain(index); setOpenChain(false); }}
+                        >
+                          <div>
+                            <img src={item.icon} style={{ marginRight: '15px' }} />
+                            <p>{item.symbol}</p>
+                          </div>
+                        </div>)
+                      }
                     </div>
                   </Drawer>
                 </div>
