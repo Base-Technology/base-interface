@@ -5133,6 +5133,11 @@ once@^1.3.0, once@^1.4.0:
   dependencies:
     wrappy "1"
 
+open-im-sdk@^2.3.0-beta.2:
+  version "2.3.0-beta.2"
+  resolved "https://registry.npmmirror.com/open-im-sdk/-/open-im-sdk-2.3.0-beta.2.tgz#50e241441229ba9b47e58f573d3fa3731149da8a"
+  integrity sha512-phi/mJzGytB3DkTXDYxKjGDcZUwXTM9yBDIOKxXX6oh8QBnLYNUdVfGLB8SsqMdfltGRu2c6MLjq1I0kW6EP2A==
+
 open@^8.4.0:
   version "8.4.0"
   resolved "https://registry.npmmirror.com/open/-/open-8.4.0.tgz#345321ae18f8138f82565a910fdc6b39e8c244f8"
@@ -6195,6 +6200,18 @@ react-redux@^8.0.2:
     react-is "^18.0.0"
     use-sync-external-store "^1.0.0"
 
+react-redux@^8.0.5:
+  version "8.0.5"
+  resolved "https://registry.npmmirror.com/react-redux/-/react-redux-8.0.5.tgz#e5fb8331993a019b8aaf2e167a93d10af469c7bd"
+  integrity sha512-Q2f6fCKxPFpkXt1qNRZdEDLlScsDWyrgSj0mliK59qU6W5gvBiKkdMEG2lJzhd1rCctf0hb6EtePPLZ2e0m1uw==
+  dependencies:
+    "@babel/runtime" "^7.12.1"
+    "@types/hoist-non-react-statics" "^3.3.1"
+    "@types/use-sync-external-store" "^0.0.3"
+    hoist-non-react-statics "^3.3.2"
+    react-is "^18.0.0"
+    use-sync-external-store "^1.0.0"
+
 react-refresh@0.14.0:
   version "0.14.0"
   resolved "https://registry.npmmirror.com/react-refresh/-/react-refresh-0.14.0.tgz#4e02825378a5f227079554d4284889354e5f553e"
@@ -7079,6 +7096,14 @@ warning@^4.0.3:
   integrity sha512-rpJyN222KWIvHJ/F53XSZv0Zl/accqHR8et1kpaMTD/fLCRxtV8iX8czMzY7sVZupTI3zcUTg8eycS2kNF9l6w==
   dependencies:
     loose-envify "^1.0.0"
+
+way-sdk-test@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.npmmirror.com/way-sdk-test/-/way-sdk-test-1.0.6.tgz#2d730b59c0f64b904c77e864adaf86cf335bfb11"
+  integrity sha512-UlJCpYh5TINMnWTaVYqqLX33GIEeG0SVSVOiEP3ApJz587K/dhrYY8AqpN15ygcGcmfzI+TKDe3WEq32NjQXJQ==
+  dependencies:
+    axios "^0.27.2"
+    open-im-sdk "^2.3.0-beta.2"
 
 wbuf@^1.1.0, wbuf@^1.7.3:
   version "1.7.3"

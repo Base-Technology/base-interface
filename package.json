@@ -20,7 +20,9 @@
     "antd": "^4.23.4",
     "ethers": "^5.7.1",
     "millify": "^5.0.1",
-    "umi": "^4.0.24"
+    "react-redux": "^8.0.5",
+    "umi": "^4.0.24",
+    "way-sdk-test": "^1.0.6"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",

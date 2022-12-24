@@ -4,7 +4,7 @@ import { Menu, Space } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 
-export default function MessageItem(props) {
+export default function MessageItem(props: any) {
 
   const { checked } = props;
   // useEffect(()=>{
@@ -26,7 +26,7 @@ export default function MessageItem(props) {
               <div style={{ fontSize: '16px', fontWeight: '400' }}>doctor</div>
             </div>
             <div className='msg-truncate'>
-              <div className='msg-truncate'><span style={{ display: 'inline-block', minWidth: '20px', height: '20px', borderRadius: '10px', textAlign: 'center', background: '#422DDD', padding: '0 5px', fontSize: '12px',color:'#ffffff' }}>221</span>&nbsp;you:hello</div>
+              <div className='msg-truncate'><span style={{ display: 'inline-block', minWidth: '20px', height: '20px', borderRadius: '10px', textAlign: 'center', background: '#422DDD', padding: '0 5px', fontSize: '12px', color: '#ffffff' }}>221</span>&nbsp;you:hello</div>
             </div>
           </div>
           <div className='msg_flex msg-flex-col msg_items_end msg_flex_between'>
