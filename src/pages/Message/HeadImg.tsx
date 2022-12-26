@@ -3,10 +3,16 @@ import { Button, Card, InputNumber, Input } from 'antd';
 import { Menu, Space } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { WayID } from 'way-sdk-test/dist/types';
 
-export default function MessageItem(props) {
+export type HeadImgProps = {
+  id: WayID
+  faceUrl: string
+}
 
-  const { checked, data } = props;
+export default function MessageItem({ id }: HeadImgProps) {
+
+
   // useEffect(()=>{
 
   // },)
@@ -23,7 +29,7 @@ export default function MessageItem(props) {
         <div className='msg_flex msg-grow msg_flex_between msg-pr-2 msg-truncate'>
           <div className='msg-truncate msg-flex-col msg-max-w-full'>
             <div>
-              <div>hello</div>
+              <div>{id.address}</div>
             </div>
             <div className='msg-truncate'>
               <LockOutlined />

@@ -19,7 +19,7 @@ import { RootState } from '@/store';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { getCveList } from '@/store/actions/cve';
 import { useAppDispatch, useAppSelector } from '@/utils/hook';
-import { setLoginStatus } from '@/store/reducers/user';
+import { setIdentity, setLoginStatus } from '@/store/reducers/user';
 
 export default function Header() {
   const dispatch = useAppDispatch()
@@ -75,6 +75,7 @@ export default function Header() {
     }
     dispatch(setLoginStatus(true))
     dispatch(getCveList())
+    dispatch(setIdentity(im.getWayID()))
 
   }
   const handleConnect = () => {

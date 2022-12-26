@@ -4,8 +4,6 @@ import { Menu, Space } from 'antd';
 import { EditOutlined, SettingOutlined, TeamOutlined, PlusOutlined, ArrowLeftOutlined, MessageOutlined, UnlockOutlined, SearchOutlined, CloseOutlined, SwapOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import MessageItem from './MessageItem';
-import DetailItem from './DetailItem';
-import HeadImg from './HeadImg';
 import './index.less';
 import { useWeb3React } from '@web3-react/core';
 import { Web3Provider } from '@ethersproject/providers';
@@ -15,11 +13,9 @@ import { useAppDispatch, useAppSelector } from '@/utils/hook';
 import ChatFeed from './ChatFeed';
 import NewConv from './NewConv';
 import { im } from '@/utils';
-import { convParams, GetHistoryMsgConfig, OpResponse, WayConversationItem, WayID, WayInitConfig, WayMessageItem } from 'way-sdk-test/dist/types';
+import { convParams, GetHistoryMsgConfig, OpResponse, WayConversationItem, WayID, WayInitConfig, WayMessageItem, WaySendMsgParams } from 'way-sdk-test/dist/types';
 import { addCve, setCurCve } from '@/store/reducers/cve';
 import { useReactive, useRequest } from 'ahooks';
-import { userIDToWayID } from 'way-sdk-test';
-const { TextArea } = Input;
 
 export type HandlerResponse = {
   statusCode: number
@@ -35,7 +31,7 @@ export default function Message() {
   const isLogin = useSelector((state: RootState) => state.user.isLogin, shallowEqual)
   const [action, setAction] = useState(0);
   const dispatch = useAppDispatch()
-  const [twoHeight, settwoHeight] = useState(false);
+
   const [iw, setIw] = useState(100);
   const inputRef = useRef(null);
   const cves = useAppSelector((state: RootState) => state.cves.cves, shallowEqual)
@@ -65,11 +61,12 @@ export default function Message() {
       //no more new message
       return
     }
-    if (res.data[0] == rs.historyMsgList[rs.historyMsgList.length - 1]) {
+    console.log(res.data.reverse())
+    if (JSON.stringify(res.data.reverse()[0]) == JSON.stringify(rs.historyMsgList[rs.historyMsgList.length - 1])) {
       rs.historyMsgList.pop()
     }
-    rs.historyMsgList = [...rs.historyMsgList, ...res.data]
-    console.log(rs.historyMsgList);
+    rs.historyMsgList = [...rs.historyMsgList, ...res.data.reverse()]
+    //console.log(rs.historyMsgList);
   }
   function getHistoryMsg(opponent: WayID, sMsg?: WayMessageItem) {
     let startpoint = ""
@@ -87,19 +84,42 @@ export default function Message() {
   }
   const clickCveItem = (cve: WayConversationItem) => {
     //
+    if (cve.conversationID == curCve?.conversationID) {
+      return
+    }
+    rs.historyMsgList = []
+    msgCancel()
     getHistoryMsg(cve.receiver)
     dispatch(setCurCve(cve))
     setAction(1);
+    markCveHasRead(cve)
   }
-  useEffect(() => {
-    if (curCve != undefined) {
-      im.listAllConversation().then((val: OpResponse) => {
-        console.log(val)
-      })
-    }
-  }, [curCve])
+  function markCveHasRead(cve: WayConversationItem) {
 
-  const handleSendMsg = async () => {
+  }
+
+  const sendMsgHandler = async (content: string, receiver: WayID) => {
+    console.log("Handle send msg")
+    console.log(content, receiver)
+    console.log(rs.historyMsgList)
+    let params: WaySendMsgParams = {
+      content: content,
+      receiver: receiver
+    }
+    try {
+      let sendMsgRes = await im.sendMessage(params)
+      console.log(sendMsgRes.data)
+      rs.historyMsgList = [sendMsgRes.data, ...rs.historyMsgList]
+      return {
+        statusCode: 0,
+        msg: sendMsgRes.data
+      } as HandlerResponse
+    } catch (e) {
+      return {
+        statusCode: -1,
+        msg: e
+      } as HandlerResponse
+    }
 
   }
   const checkCurrentCve = (c1: WayConversationItem | null, c2: WayConversationItem) => {
@@ -177,7 +197,7 @@ export default function Message() {
             }
             {/* 聊天记录 TODO:add place holder when non cve has been selected*/}
             {
-              (action == 1 && curCve !== null) && <ChatFeed curCve={curCve} msgList={rs.historyMsgList} handleSendMsg={handleSendMsg} />
+              (action == 1 && curCve !== null) && <ChatFeed curCve={curCve} msgList={rs.historyMsgList} handleSendMsg={sendMsgHandler} />
             }
 
           </div>
