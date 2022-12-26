@@ -6,7 +6,7 @@ export interface DisplayConversationItem extends WayConversationItem {
 }
 
 export type CveState = {
-    cves: DisplayConversationItem[]
-    curCve: DisplayConversationItem | null
+    cves: WayConversationItem[]
+    curCve: WayConversationItem | null
 }
 

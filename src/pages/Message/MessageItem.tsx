@@ -3,13 +3,66 @@ import { Button, Card, InputNumber, Input } from 'antd';
 import { Menu, Space } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { DisplayConversationItem } from '@/store/types/cve';
+import { WayConversationItem, WayMessageItem } from 'way-sdk-test/dist/types';
 
-export default function MessageItem(props: any) {
+type MessageItemProps = {
+  convItem: WayConversationItem
+  checked: boolean
+}
 
-  const { checked } = props;
-  // useEffect(()=>{
+export default function MessageItem({ convItem, checked }: MessageItemProps) {
 
-  // },)
+  let latestMsg = convItem.latestMsg?.content
+  //console.log(latestMsg)
+  //console.log(convItem)
+  let displayAddrFunc = (addr: string): string => {
+    let res = ""
+    res = res.concat(addr.slice(0, 4))
+    res = res.concat("...")
+    res = res.concat(addr.slice(-4))
+    return res
+  }
+  let displayTime = (time: number | undefined): string => {
+    //TODO: should return different time format depends on date
+    //console.log(time)
+    if (typeof time === 'undefined') {
+      return ""
+    }
+    let now = new Date(Date.now())
+    let date = new Date(time)
+    if (now.getDate() == date.getDate()) {
+      //print as time
+      let res = ""
+      res = res.concat(date.getHours().toString() + ":" + date.getMinutes().toString())
+      return res
+    } else {
+      //print as date
+      let res = ""
+      res = res.concat(date.getMonth().toString() + "/" + date.getDay().toString())
+      return res
+    }
+  }
+  let displayUnread = (count: number): string => {
+    if (count == 0) {
+      return ""
+    } else {
+      return count.toString()
+    }
+  }
+  let displayMsg = (latestMsg: WayMessageItem | undefined) => {
+    //show brief text
+    //behave differently base on different content type
+    if (typeof latestMsg === 'undefined') {
+      return ""
+    }
+    if (latestMsg.contentType == 101) {
+      return latestMsg.content
+    } else {
+      return ""
+    }
+  }
+
   return (
     <div className='msg_overflow_hidden msg_shrink_0'>
       <div className={`msg_flex msg_items_center msg_cursor_pointer msg_select_none msg_border_b msg_bg_subtle_hover ${checked && 'msg_bg_subtle_night'} msg-py-2 msg-px-4`}>
@@ -26,12 +79,12 @@ export default function MessageItem(props: any) {
               <div style={{ fontSize: '16px', fontWeight: '400' }}>doctor</div>
             </div>
             <div className='msg-truncate'>
-              <div className='msg-truncate'><span style={{ display: 'inline-block', minWidth: '20px', height: '20px', borderRadius: '10px', textAlign: 'center', background: '#422DDD', padding: '0 5px', fontSize: '12px', color: '#ffffff' }}>221</span>&nbsp;you:hello</div>
+              <div className='msg-truncate'>{convItem.unreadCount != 0 && <span style={{ display: 'inline-block', minWidth: '20px', height: '20px', borderRadius: '10px', textAlign: 'center', background: '#422DDD', padding: '0 5px', fontSize: '12px', color: '#ffffff' }}>{displayUnread(convItem.unreadCount)}</span>}&nbsp;{displayMsg(convItem.latestMsg)}</div>
             </div>
           </div>
           <div className='msg_flex msg-flex-col msg_items_end msg_flex_between'>
-            <span style={{ fontSize: '12px', fontWeight: 'normal', color: 'rgba(255,255,255,0.4)' }}>0xeb...89e1</span>
-            <span className="msg-opacity-30 msg-xs-small">11:00 PM</span>
+            <span style={{ fontSize: '12px', fontWeight: 'normal', color: 'rgba(255,255,255,0.4)' }}>{displayAddrFunc(convItem.receiver.address)}</span>
+            <span className="msg-opacity-30 msg-xs-small">{displayTime(convItem.latestMsgSendTime)}</span>
           </div>
         </div>
       </div>

@@ -1,14 +1,20 @@
 import { SettingOutlined } from "@ant-design/icons";
 import TextArea from "antd/lib/input/TextArea";
-import { WayMessageItem } from "way-sdk-test/dist/types";
+import { WayConversationItem, WayMessageItem } from "way-sdk-test/dist/types";
+import { ReactiveState } from ".";
 import DetailItem from "./DetailItem";
 import HeadImg from "./HeadImg";
 
 type ChatFeedProps = {
-    msgList?: WayMessageItem[]
+    msgList: WayMessageItem[]
+    handleSendMsg: () => void
+    curCve: WayConversationItem
 }
 
-export default function ChatFeed({ msgList }: ChatFeedProps) {
+export default function ChatFeed({ msgList, handleSendMsg, curCve }: ChatFeedProps) {
+    //good questions: should i fetch msg list here, or fetch it outside 
+    console.log("inside chatfeed")
+    console.log(msgList)
     return (
         <>
             <div className='header msg_flex msg_flex_between msg_items_center msg_border_b'>

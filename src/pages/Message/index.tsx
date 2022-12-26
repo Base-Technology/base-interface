@@ -15,13 +15,21 @@ import { useAppDispatch, useAppSelector } from '@/utils/hook';
 import ChatFeed from './ChatFeed';
 import NewConv from './NewConv';
 import { im } from '@/utils';
-import { convParams, WayID, WayInitConfig } from 'way-sdk-test/dist/types';
-import { addCve } from '@/store/reducers/cve';
+import { convParams, GetHistoryMsgConfig, OpResponse, WayConversationItem, WayID, WayInitConfig, WayMessageItem } from 'way-sdk-test/dist/types';
+import { addCve, setCurCve } from '@/store/reducers/cve';
+import { useReactive, useRequest } from 'ahooks';
+import { userIDToWayID } from 'way-sdk-test';
 const { TextArea } = Input;
 
 export type HandlerResponse = {
   statusCode: number
   msg: any
+}
+
+export type ReactiveState = {
+  historyMsgList: WayMessageItem[]
+  // searchStatus: boolean
+  // searchCve: WayConversationItem[]
 }
 export default function Message() {
   const isLogin = useSelector((state: RootState) => state.user.isLogin, shallowEqual)
@@ -31,9 +39,78 @@ export default function Message() {
   const [iw, setIw] = useState(100);
   const inputRef = useRef(null);
   const cves = useAppSelector((state: RootState) => state.cves.cves, shallowEqual)
-  const [list, setList] = useState([{
-    checked: false,
-  }]);
+  const curCve = useAppSelector((state: RootState) => state.cves.curCve, shallowEqual)
+  const rs = useReactive<ReactiveState>({
+    historyMsgList: []
+  })
+
+  const {
+    loading,
+    run: getMsg,
+    cancel: msgCancel
+  } = useRequest(getMsgWrapper, {
+    manual: true,
+    onSuccess: handleMsg,
+    onError: (err) => {
+      console.log("get message fail")
+      console.log(err)
+    }
+  })
+  //use wrapper to deliver context
+  function getMsgWrapper(params: GetHistoryMsgConfig): Promise<OpResponse> {
+    return im.getHistoryMsg(params)
+  }
+  function handleMsg(res: OpResponse) {
+    if (res.data.length === 0) {
+      //no more new message
+      return
+    }
+    if (res.data[0] == rs.historyMsgList[rs.historyMsgList.length - 1]) {
+      rs.historyMsgList.pop()
+    }
+    rs.historyMsgList = [...rs.historyMsgList, ...res.data]
+    console.log(rs.historyMsgList);
+  }
+  function getHistoryMsg(opponent: WayID, sMsg?: WayMessageItem) {
+    let startpoint = ""
+    if (typeof sMsg !== 'undefined') {
+      startpoint = sMsg.clientMsgID
+    }
+    const params: GetHistoryMsgConfig = {
+      userID: opponent,
+      startClientMsgID: startpoint,
+      count: 20
+    }
+    console.log("running get msg!")
+    console.log(params)
+    getMsg(params)
+  }
+  const clickCveItem = (cve: WayConversationItem) => {
+    //
+    getHistoryMsg(cve.receiver)
+    dispatch(setCurCve(cve))
+    setAction(1);
+  }
+  useEffect(() => {
+    if (curCve != undefined) {
+      im.listAllConversation().then((val: OpResponse) => {
+        console.log(val)
+      })
+    }
+  }, [curCve])
+
+  const handleSendMsg = async () => {
+
+  }
+  const checkCurrentCve = (c1: WayConversationItem | null, c2: WayConversationItem) => {
+    if (c1 == null) {
+      return false
+    }
+    if (c1.conversationID == c2.conversationID) {
+      return true
+    }
+    return false
+  }
   const addNewConvHandler = async (chainId: number, addr: string): Promise<HandlerResponse> => {
     let receiver: WayID = {
       network: chainId.toString(),
@@ -86,17 +163,9 @@ export default function Message() {
             <div className='msg_list'>
               {
                 cves.map((item, index) => <div onClick={() => {
-                  setList(data => {
-                    const newData = data.map(item => { item.checked = false; return item; }).map((item, index2) => {
-                      if (index2 == index) {
-                        item.checked = true;
-                      }
-                      return item;
-                    })
-                    return newData;
-                  });
-                  setAction(1);
-                }}><MessageItem checked={item.checked} /></div>)
+                  clickCveItem(item)
+
+                }}><MessageItem convItem={item} checked={checkCurrentCve(curCve, item)} /></div>)
               }
               <p><br /></p>
             </div>
@@ -106,9 +175,9 @@ export default function Message() {
             {
               action == 0 && <NewConv setAction={setAction} addNewConvHandler={addNewConvHandler} />
             }
-            {/* 聊天记录 */}
+            {/* 聊天记录 TODO:add place holder when non cve has been selected*/}
             {
-              action == 1 && <ChatFeed />
+              (action == 1 && curCve !== null) && <ChatFeed curCve={curCve} msgList={rs.historyMsgList} handleSendMsg={handleSendMsg} />
             }
 
           </div>

@@ -25,14 +25,15 @@ export const cveSlice = createSlice({
     initialState,
     reducers: {
         setCveList: (state, action: PayloadAction<WayConversationItem[]>) => {
-            state.cves = convertFunc(action.payload)
+            state.cves = action.payload
         },
         setCurCve: (state, action: PayloadAction<WayConversationItem>) => {
-            state.curCve = conversationItemTruncator(action.payload)
+            state.curCve = action.payload
         },
         addCve: (state, action: PayloadAction<WayConversationItem>) => {
-            state.cves = [...state.cves, conversationItemTruncator(action.payload)]
-        }
+            state.cves = [...state.cves, action.payload]
+        },
+
     }
 })
 
