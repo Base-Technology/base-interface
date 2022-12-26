@@ -7,17 +7,3 @@ import { SET_LOGIN_STATUS, SET_IDENTITY, UserActionTypes } from "../types/user";
 
 
 
-export const setIdentity = (value: WayID): UserActionTypes => {
-    return {
-        type: SET_IDENTITY,
-        payload: value
-    }
-}
-
-export const setLoginStatus = (value: boolean): UserActionTypes => {
-    return {
-        type: SET_LOGIN_STATUS,
-        payload: value,
-    };
-};
-

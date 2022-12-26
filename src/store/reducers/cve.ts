@@ -30,7 +30,9 @@ export const cveSlice = createSlice({
         setCurCve: (state, action: PayloadAction<WayConversationItem>) => {
             state.curCve = conversationItemTruncator(action.payload)
         },
-
+        addCve: (state, action: PayloadAction<WayConversationItem>) => {
+            state.cves = [...state.cves, conversationItemTruncator(action.payload)]
+        }
     }
 })
 
@@ -48,7 +50,7 @@ const convertFunc = (cs: WayConversationItem[]): DisplayConversationItem[] => {
     return res
 }
 
-export const { setCveList, setCurCve } = cveSlice.actions
+export const { setCveList, setCurCve, addCve } = cveSlice.actions
 export const selectCveList = (state: RootState) => state.cves.cves
 
 export const cveReducer = cveSlice.reducer

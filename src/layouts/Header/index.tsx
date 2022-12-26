@@ -17,9 +17,9 @@ import { WayInitConfig, WayLoginParams } from 'way-sdk-test/dist/types';
 import { APPSERVER, IMURL } from '@/config';
 import { RootState } from '@/store';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { setLoginStatus } from '@/store/actions/user';
 import { getCveList } from '@/store/actions/cve';
 import { useAppDispatch, useAppSelector } from '@/utils/hook';
+import { setLoginStatus } from '@/store/reducers/user';
 
 export default function Header() {
   const dispatch = useAppDispatch()
@@ -28,7 +28,7 @@ export default function Header() {
   const { chainId, account, activate, active, library } = useWeb3React<Web3Provider>()
   const loginTry = useRef<number>(0)
   useEffect(() => {
-    console.log(chainId, account, active, library)
+    //console.log(chainId, account, active, library)
     if (active && loginTry.current == 0) {
       login()
     }
@@ -37,21 +37,24 @@ export default function Header() {
     loginTry.current += 1
     await library?.send("eth_requestAccounts", [])
     let signer = library?.getSigner()
-    console.log(signer)
+    //console.log(signer)
     let addr = await signer?.getAddress()
     let networkId = await signer?.getChainId()
     let signature = await signer?.signMessage("hello")
     if (signature == undefined) {
+      console.log("error on loggin in")
       return
     }
     if (networkId == undefined) {
+      console.log("error on loggin in")
       return
     }
     if (addr == undefined) {
+      console.log("error on loggin in")
       return
     }
-    console.log(networkId.toString)
-    console.log("loggin in")
+    //console.log(networkId.toString)
+    //console.log("loggin in")
     let loginParams: WayLoginParams = {
       signature: signature,
       senderAddress: addr,
@@ -64,9 +67,10 @@ export default function Header() {
     }
     try {
       let resLog = await im.loginWay(config)
-      console.log(resLog)
+      //console.log(resLog)
     } catch (e) {
       //error handle
+      console.log("error on logging in")
       return
     }
     dispatch(setLoginStatus(true))
@@ -75,7 +79,7 @@ export default function Header() {
   }
   const handleConnect = () => {
     //login, dispatch
-    console.log("handle connect!")
+    //console.log("handle connect!")
     activate(injectedConnector)
     //login
     //connect should bind with login! not extensions connection.

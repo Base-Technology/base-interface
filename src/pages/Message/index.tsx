@@ -11,13 +11,22 @@ import { useWeb3React } from '@web3-react/core';
 import { Web3Provider } from '@ethersproject/providers';
 import { shallowEqual, useSelector } from 'react-redux';
 import { RootState } from '@/store';
-import { useAppSelector } from '@/utils/hook';
+import { useAppDispatch, useAppSelector } from '@/utils/hook';
 import ChatFeed from './ChatFeed';
 import NewConv from './NewConv';
+import { im } from '@/utils';
+import { convParams, WayID, WayInitConfig } from 'way-sdk-test/dist/types';
+import { addCve } from '@/store/reducers/cve';
 const { TextArea } = Input;
+
+export type HandlerResponse = {
+  statusCode: number
+  msg: any
+}
 export default function Message() {
   const isLogin = useSelector((state: RootState) => state.user.isLogin, shallowEqual)
   const [action, setAction] = useState(0);
+  const dispatch = useAppDispatch()
   const [twoHeight, settwoHeight] = useState(false);
   const [iw, setIw] = useState(100);
   const inputRef = useRef(null);
@@ -25,7 +34,40 @@ export default function Message() {
   const [list, setList] = useState([{
     checked: false,
   }]);
+  const addNewConvHandler = async (chainId: number, addr: string): Promise<HandlerResponse> => {
+    let receiver: WayID = {
+      network: chainId.toString(),
+      type: 1,
+      address: addr
+    }
+    let params: convParams = {
+      receiver
+    }
+    try {
+      let res = await im.initConversation(params)
+      //success
+      //TODO: should implement type guard for res.data
+      dispatch(addCve(res.data))
+      return {
+        statusCode: 0,
+        msg: "success"
+      }
+    } catch (error) {
+      //error
+      return {
+        statusCode: -1,
+        msg: error
+      }
+    }
 
+
+  }
+  useEffect(() => {
+    if (isLogin) {
+      //register callback
+
+    }
+  }, [isLogin])
   const cveList = useAppSelector((state: RootState) => state.cves.cves, shallowEqual)
   const { chainId, account, activate, active, library } = useWeb3React<Web3Provider>()
   return (
@@ -62,7 +104,7 @@ export default function Message() {
           <div className='msgdetails msg-w-full msg_flex msg_flex_col'>
             {/* 新建聊天 */}
             {
-              action == 0 && <NewConv setAction={setAction} />
+              action == 0 && <NewConv setAction={setAction} addNewConvHandler={addNewConvHandler} />
             }
             {/* 聊天记录 */}
             {
