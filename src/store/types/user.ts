@@ -2,20 +2,20 @@ import { WayID } from 'way-sdk-test/dist/types'
 
 export type UserState = {
     identity: WayID
-    token: string
+    isLogin: boolean
 }
 
 export const SET_IDENTITY = 'SET_IDENTITY'
-export const SET_ADMIN_TOKEN = 'SET_ADMIN_TOKEN'
+export const SET_LOGIN_STATUS = 'SET_LOGIN_STATUS'
 
 type SetIdentity = {
     type: typeof SET_IDENTITY
     payload: WayID
 }
 
-type SetSelfToken = {
-    type: typeof SET_ADMIN_TOKEN
-    payload: string
+type SetLoginStatus = {
+    type: typeof SET_LOGIN_STATUS
+    payload: boolean
 }
 
-export type UserActionTypes = SetIdentity | SetSelfToken
+export type UserActionTypes = SetIdentity | SetLoginStatus

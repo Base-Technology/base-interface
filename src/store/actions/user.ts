@@ -1,5 +1,7 @@
+import { im } from "@/utils";
+import { Dispatch } from "redux";
 import { WayID } from "way-sdk-test/dist/types";
-import { SET_ADMIN_TOKEN, SET_IDENTITY, UserActionTypes } from "../types/user";
+import { SET_LOGIN_STATUS, SET_IDENTITY, UserActionTypes } from "../types/user";
 
 
 
@@ -12,9 +14,9 @@ export const setIdentity = (value: WayID): UserActionTypes => {
     }
 }
 
-export const setAdminToken = (value: string): UserActionTypes => {
+export const setLoginStatus = (value: boolean): UserActionTypes => {
     return {
-        type: SET_ADMIN_TOKEN,
+        type: SET_LOGIN_STATUS,
         payload: value,
     };
 };

@@ -7,9 +7,13 @@ import MessageItem from './MessageItem';
 import DetailItem from './DetailItem';
 import HeadImg from './HeadImg';
 import './index.less';
+import { useWeb3React } from '@web3-react/core';
+import { Web3Provider } from '@ethersproject/providers';
+import { shallowEqual, useSelector } from 'react-redux';
+import { RootState } from '@/store';
 const { TextArea } = Input;
 export default function Message() {
-
+  const isLogin = useSelector((state: RootState) => state.user.isLogin, shallowEqual)
   const [action, setAction] = useState(0);
   const [twoHeight, settwoHeight] = useState(false);
   const [iw, setIw] = useState(100);
@@ -73,21 +77,34 @@ export default function Message() {
   const chainList = [
     {
       'symbol': 'Ethereum',
-      'icon': '/eth.svg'
+      'icon': '/eth.svg',
+      'network_id': 1
     },
     {
       'symbol': 'BNB Chain',
-      'icon': '/bnb.svg'
+      'icon': '/bnb.svg',
+      'network_id': 56
     },
     {
       'symbol': 'Polygon',
-      'icon': '/polygon.svg'
+      'icon': '/polygon.svg',
+      'network': 137
     },
     {
       'symbol': 'Optimism',
-      'icon': '/optimism.png'
+      'icon': '/optimism.png',
+      'network': 10
     }
   ];
+  const cveList = useSelector((state: RootState) => state.cve.cves, shallowEqual)
+  const { chainId, account, activate, active, library } = useWeb3React<Web3Provider>()
+  const handleTest = () => {
+    console.log("message!")
+    console.log(chainId, account, active, library)
+  }
+  useEffect(() => {
+    console.log(cveList)
+  }, [cveList])
   const [currentChain, setCurrentChain] = useState(0);
   return (
     <div>
@@ -198,12 +215,13 @@ export default function Message() {
               action == 1 && <>
                 <div className='header msg_flex msg_flex_between msg_items_center msg_border_b'>
                   <HeadImg data={list} />
+                  <Button onClick={handleTest}>test</Button>
                   <div><SettingOutlined /></div>
                 </div>
                 <div className='detail_list msg_flex msg-flex-col-reverse'>
-                  {
-                    list.map((item, index) => <DetailItem />)
-                  }
+                  {/* {
+                    list.map((item, index) => <DetailItem />) reverse!!
+                  } */}
 
                   <DetailItem />
                   <DetailItem />
@@ -219,6 +237,7 @@ export default function Message() {
                   <DetailItem />
                   <DetailItem />
                   <DetailItem />
+                  {/* <DetailItem />
                   <DetailItem />
                   <DetailItem />
                   <DetailItem />
@@ -240,8 +259,7 @@ export default function Message() {
                   <DetailItem />
                   <DetailItem />
                   <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
+                  <DetailItem /> */}
                 </div>
                 <div style={{ padding: '10px' }}>
                   <TextArea

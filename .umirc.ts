@@ -2,7 +2,7 @@ export default {
   npmClient: "yarn",
   fastRefresh: true,
   favicons: ['/icon.svg'],
-  title:'Base Tech',
+  title: 'Base Tech',
   dva: {},
   plugins: ["@umijs/plugins/dist/dva",
     "@umijs/plugins/dist/locale",
@@ -18,10 +18,10 @@ export default {
     baseSeparator: '-',
   },
   theme: {
-    'primary-color':'#422DDD',
+    'primary-color': '#422DDD',
   },
   model: {},
   routes: [
-    { path: '/', component: '@/pages/Message' },
+    { path: '/', component: '@/pages/App' },
   ],
 };
