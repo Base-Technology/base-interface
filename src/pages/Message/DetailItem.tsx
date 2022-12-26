@@ -22,7 +22,9 @@ export default function MessageItem({ msg }: DetailItemProps) {
   const displayTime = (time: number) => {
     let date = new Date(time)
     let res = ""
-    res = res.concat(date.getHours().toString() + ":" + date.getMinutes().toString())
+    let hour = "0" + date.getHours()
+    let mins = "0" + date.getMinutes()
+    res = res.concat(hour.slice(-2) + ":" + mins.slice(-2))
     return res
   }
   return (

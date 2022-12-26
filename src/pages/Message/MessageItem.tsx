@@ -34,12 +34,16 @@ export default function MessageItem({ convItem, checked }: MessageItemProps) {
     if (now.getDate() == date.getDate()) {
       //print as time
       let res = ""
-      res = res.concat(date.getHours().toString() + ":" + date.getMinutes().toString())
+      let hour = "0" + date.getHours()
+      let mins = "0" + date.getMinutes()
+      res = res.concat(hour.slice(-2) + ":" + mins.slice(-2))
       return res
     } else {
       //print as date
       let res = ""
-      res = res.concat(date.getMonth().toString() + "/" + date.getDay().toString())
+      let month = "0" + date.getMonth()
+      let day = "0" + date.getDay()
+      res = res.concat(month.slice(-2) + "/" + day.slice(-2))
       return res
     }
   }

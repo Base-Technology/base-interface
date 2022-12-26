@@ -33,7 +33,22 @@ export const cveSlice = createSlice({
         addCve: (state, action: PayloadAction<WayConversationItem>) => {
             state.cves = [...state.cves, action.payload]
         },
-
+        updateCve: (state, action: PayloadAction<WayConversationItem>) => {
+            state.cves = [action.payload, ...state.cves.filter((val, i) => {
+                if (val.conversationID == action.payload.conversationID) {
+                    return false
+                }
+                return true
+            })]
+        },
+        markReadCve: (state, action: PayloadAction<WayConversationItem>) => {
+            state.cves = state.cves.map((v, i) => {
+                if (v.conversationID == action.payload.conversationID) {
+                    return action.payload
+                }
+                return v
+            })
+        }
     }
 })
 
@@ -51,7 +66,7 @@ const convertFunc = (cs: WayConversationItem[]): DisplayConversationItem[] => {
     return res
 }
 
-export const { setCveList, setCurCve, addCve } = cveSlice.actions
+export const { setCveList, setCurCve, addCve, updateCve, markReadCve } = cveSlice.actions
 export const selectCveList = (state: RootState) => state.cves.cves
 
 export const cveReducer = cveSlice.reducer

@@ -14,8 +14,9 @@ import ChatFeed from './ChatFeed';
 import NewConv from './NewConv';
 import { im } from '@/utils';
 import { convParams, GetHistoryMsgConfig, OpResponse, WayConversationItem, WayID, WayInitConfig, WayMessageItem, WaySendMsgParams } from 'way-sdk-test/dist/types';
-import { addCve, setCurCve } from '@/store/reducers/cve';
+import { addCve, markReadCve, setCurCve, updateCve } from '@/store/reducers/cve';
 import { useReactive, useRequest } from 'ahooks';
+import { WayCbEvents, wayIDToUserID } from 'way-sdk-test';
 
 export type HandlerResponse = {
   statusCode: number
@@ -39,7 +40,27 @@ export default function Message() {
   const rs = useReactive<ReactiveState>({
     historyMsgList: []
   })
+  useEffect(() => {
+    im.on(WayCbEvents.ONRECVNEWMESSAGE, newMsgHandler)
+    return () => {
+      im.off(WayCbEvents.ONRECVNEWMESSAGE, newMsgHandler)
+    }
+  }, [curCve])
+  async function newMsgHandler(data: OpResponse) {
+    console.log(data)
+    const msg = data.data as WayMessageItem
+    if (curCve) {
+      if (inCurCve(msg)) {
+        rs.historyMsgList = [msg, ...rs.historyMsgList]
+      }
+    }
+    //update conversations...
+    let getConvRes = await im.getOneConversation(msg.sender)
+    if (getConvRes.errCode == 0) {
+      dispatch(updateCve(getConvRes.data))
+    }
 
+  }
   const {
     loading,
     run: getMsg,
@@ -55,6 +76,17 @@ export default function Message() {
   //use wrapper to deliver context
   function getMsgWrapper(params: GetHistoryMsgConfig): Promise<OpResponse> {
     return im.getHistoryMsg(params)
+  }
+  function inCurCve(msg: WayMessageItem): boolean {
+    if (curCve) {
+      if (wayIDToUserID(msg.sender) == wayIDToUserID(curCve.receiver)) {
+        return true
+      } else {
+        return false
+      }
+    }
+    return false
+
   }
   function handleMsg(res: OpResponse) {
     if (res.data.length === 0) {
@@ -82,7 +114,7 @@ export default function Message() {
     console.log(params)
     getMsg(params)
   }
-  const clickCveItem = (cve: WayConversationItem) => {
+  const clickCveItem = async (cve: WayConversationItem) => {
     //
     if (cve.conversationID == curCve?.conversationID) {
       return
@@ -90,11 +122,21 @@ export default function Message() {
     rs.historyMsgList = []
     msgCancel()
     getHistoryMsg(cve.receiver)
-    dispatch(setCurCve(cve))
+    await markCveHasRead(cve)
     setAction(1);
-    markCveHasRead(cve)
+
+    dispatch(setCurCve(cve))
   }
-  function markCveHasRead(cve: WayConversationItem) {
+  async function markCveHasRead(cve: WayConversationItem) {
+    try {
+      let markRes = await im.markAsRead(cve.receiver)
+      if (markRes.errCode == 0) {
+        let conv = await im.getOneConversation(cve.receiver)
+        dispatch(markReadCve(conv.data))
+      }
+    } catch (e) {
+      console.log(e)
+    }
 
   }
 
