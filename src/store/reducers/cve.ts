@@ -1,7 +1,8 @@
+import { im } from "@/utils";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { WayConversationItem } from "way-sdk-test/dist/types";
 import { RootState } from "..";
-import { CveActionTypes, CveState, SET_CUR_CVE, SET_CVE_LIST } from "../types/cve";
+import { CveState, DisplayConversationItem } from "../types/cve";
 
 
 
@@ -24,13 +25,28 @@ export const cveSlice = createSlice({
     initialState,
     reducers: {
         setCveList: (state, action: PayloadAction<WayConversationItem[]>) => {
-            state.cves = action.payload
+            state.cves = convertFunc(action.payload)
         },
         setCurCve: (state, action: PayloadAction<WayConversationItem>) => {
-            state.curCve = action.payload
-        }
+            state.curCve = conversationItemTruncator(action.payload)
+        },
+
     }
 })
+
+const conversationItemTruncator = (c: WayConversationItem): DisplayConversationItem => {
+    return {
+        ...c,
+        checked: false
+    }
+}
+const convertFunc = (cs: WayConversationItem[]): DisplayConversationItem[] => {
+    let res = [] as DisplayConversationItem[]
+    for (let i = 0; i < cs.length; i++) {
+        res.push(conversationItemTruncator(cs[i]))
+    }
+    return res
+}
 
 export const { setCveList, setCurCve } = cveSlice.actions
 export const selectCveList = (state: RootState) => state.cves.cves

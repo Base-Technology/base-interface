@@ -19,10 +19,11 @@ import { RootState } from '@/store';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { setLoginStatus } from '@/store/actions/user';
 import { getCveList } from '@/store/actions/cve';
+import { useAppDispatch, useAppSelector } from '@/utils/hook';
 
 export default function Header() {
-  const dispatch = useDispatch()
-  const isLogin = useSelector((state: RootState) => state.user.isLogin, shallowEqual);
+  const dispatch = useAppDispatch()
+  const isLogin = useAppSelector((state: RootState) => state.user.isLogin, shallowEqual);
   const injectedConnector = new InjectedConnector({})
   const { chainId, account, activate, active, library } = useWeb3React<Web3Provider>()
   const loginTry = useRef<number>(0)
@@ -69,6 +70,7 @@ export default function Header() {
       return
     }
     dispatch(setLoginStatus(true))
+    dispatch(getCveList())
 
   }
   const handleConnect = () => {
