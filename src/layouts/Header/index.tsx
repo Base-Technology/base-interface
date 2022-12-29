@@ -33,6 +33,26 @@ export default function Header() {
       login()
     }
   }, [chainId])
+  useEffect(() => {
+    //login once here!
+
+    let initConfig = sessionStorage.getItem("wayInitConfig")
+    if (initConfig == null) {
+      return
+
+    }
+
+    let config = JSON.parse(initConfig) as WayInitConfig
+    im.loginWay(config).then((resLog) => {
+      console.log(resLog)
+      dispatch(setLoginStatus(true))
+      dispatch(getCveList())
+      dispatch(setIdentity(im.getWayID()))
+    }).catch(e => {
+      console.log("default login")
+      console.log(e)
+    })
+  }, [])
   const login = async () => {
     loginTry.current += 1
     await library?.send("eth_requestAccounts", [])
@@ -60,11 +80,14 @@ export default function Header() {
       senderAddress: addr,
       network: networkId.toString()
     }
+
+
     let config: WayInitConfig = {
       msgServer: IMURL,
       appServer: APPSERVER,
       loginParams
     }
+
     try {
       let resLog = await im.loginWay(config)
       //console.log(resLog)
@@ -73,6 +96,8 @@ export default function Header() {
       console.log("error on logging in")
       return
     }
+    sessionStorage.setItem("wayLoginParams", JSON.stringify(loginParams))
+    sessionStorage.setItem("wayInitConfig", JSON.stringify(config))
     dispatch(setLoginStatus(true))
     dispatch(getCveList())
     dispatch(setIdentity(im.getWayID()))
