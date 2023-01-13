@@ -4,91 +4,211 @@ import { Menu, Space } from 'antd';
 import { EditOutlined, SettingOutlined, TeamOutlined, PlusOutlined, ArrowLeftOutlined, MessageOutlined, UnlockOutlined, SearchOutlined, CloseOutlined, SwapOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import MessageItem from './MessageItem';
-import DetailItem from './DetailItem';
-import HeadImg from './HeadImg';
 import './index.less';
-const { TextArea } = Input;
-export default function Message() {
+import { useWeb3React } from '@web3-react/core';
+import { Web3Provider } from '@ethersproject/providers';
+import { shallowEqual, useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { useAppDispatch, useAppSelector } from '@/utils/hook';
+import ChatFeed from './ChatFeed';
+import NewConv from './NewConv';
+import { im } from '@/utils';
+import { convParams, GetHistoryMsgConfig, OpResponse, WayConversationItem, WayID, WayInitConfig, WayMessageItem, WaySendMsgParams } from 'way-sdk-test/dist/types';
+import { addCve, markReadCve, setCurCve, updateCve } from '@/store/reducers/cve';
+import { useReactive, useRequest } from 'ahooks';
+import { WayCbEvents, wayIDToUserID } from 'way-sdk-test';
 
+export type HandlerResponse = {
+  statusCode: number
+  msg: any
+}
+
+export type ReactiveState = {
+  historyMsgList: WayMessageItem[]
+  // searchStatus: boolean
+  // searchCve: WayConversationItem[]
+}
+export default function Message() {
+  const isLogin = useSelector((state: RootState) => state.user.isLogin, shallowEqual)
   const [action, setAction] = useState(0);
-  const [twoHeight, settwoHeight] = useState(false);
+  const dispatch = useAppDispatch()
+
   const [iw, setIw] = useState(100);
   const inputRef = useRef(null);
-  const [list, setList] = useState([{
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }]);
-  const [openChain, setOpenChain] = useState(false);
-  const chainList = [
-    {
-      'symbol': 'Ethereum',
-      'icon': '/eth.svg'
-    },
-    {
-      'symbol': 'BNB Chain',
-      'icon': '/bnb.svg'
-    },
-    {
-      'symbol': 'Polygon',
-      'icon': '/polygon.svg'
-    },
-    {
-      'symbol': 'Optimism',
-      'icon': '/optimism.png'
+  const cves = useAppSelector((state: RootState) => state.cves.cves, shallowEqual)
+  const curCve = useAppSelector((state: RootState) => state.cves.curCve, shallowEqual)
+  const rs = useReactive<ReactiveState>({
+    historyMsgList: []
+  })
+  useEffect(() => {
+    im.on(WayCbEvents.ONRECVNEWMESSAGE, newMsgHandler)
+    return () => {
+      im.off(WayCbEvents.ONRECVNEWMESSAGE, newMsgHandler)
     }
-  ];
-  const [currentChain, setCurrentChain] = useState(0);
+  }, [curCve])
+  async function newMsgHandler(data: OpResponse) {
+    console.log(data)
+    const msg = data.data as WayMessageItem
+    if (curCve) {
+      if (inCurCve(msg)) {
+        rs.historyMsgList = [msg, ...rs.historyMsgList]
+      }
+    }
+    //update conversations...
+    let getConvRes = await im.getOneConversation(msg.sender)
+    if (getConvRes.errCode == 0) {
+      dispatch(updateCve(getConvRes.data))
+    }
+
+  }
+  const {
+    loading,
+    run: getMsg,
+    cancel: msgCancel
+  } = useRequest(getMsgWrapper, {
+    manual: true,
+    onSuccess: handleMsg,
+    onError: (err) => {
+      console.log("get message fail")
+      console.log(err)
+    }
+  })
+  //use wrapper to deliver context
+  function getMsgWrapper(params: GetHistoryMsgConfig): Promise<OpResponse> {
+    return im.getHistoryMsg(params)
+  }
+  function inCurCve(msg: WayMessageItem): boolean {
+    if (curCve) {
+      if (wayIDToUserID(msg.sender) == wayIDToUserID(curCve.receiver)) {
+        return true
+      } else {
+        return false
+      }
+    }
+    return false
+
+  }
+  function handleMsg(res: OpResponse) {
+    if (res.data.length === 0) {
+      //no more new message
+      return
+    }
+    console.log(res.data.reverse())
+    if (JSON.stringify(res.data.reverse()[0]) == JSON.stringify(rs.historyMsgList[rs.historyMsgList.length - 1])) {
+      rs.historyMsgList.pop()
+    }
+    rs.historyMsgList = [...rs.historyMsgList, ...res.data.reverse()]
+    //console.log(rs.historyMsgList);
+  }
+  function getHistoryMsg(opponent: WayID, sMsg?: WayMessageItem) {
+    let startpoint = ""
+    if (typeof sMsg !== 'undefined') {
+      startpoint = sMsg.clientMsgID
+    }
+    const params: GetHistoryMsgConfig = {
+      userID: opponent,
+      startClientMsgID: startpoint,
+      count: 20
+    }
+    console.log("running get msg!")
+    console.log(params)
+    getMsg(params)
+  }
+  const clickCveItem = async (cve: WayConversationItem) => {
+    //
+    if (cve.conversationID == curCve?.conversationID) {
+      return
+    }
+    rs.historyMsgList = []
+    msgCancel()
+    getHistoryMsg(cve.receiver)
+    await markCveHasRead(cve)
+    setAction(1);
+
+    dispatch(setCurCve(cve))
+  }
+  async function markCveHasRead(cve: WayConversationItem) {
+    try {
+      let markRes = await im.markAsRead(cve.receiver)
+      if (markRes.errCode == 0) {
+        let conv = await im.getOneConversation(cve.receiver)
+        dispatch(markReadCve(conv.data))
+      }
+    } catch (e) {
+      console.log(e)
+    }
+
+  }
+
+  const sendMsgHandler = async (content: string, receiver: WayID) => {
+    console.log("Handle send msg")
+    console.log(content, receiver)
+    console.log(rs.historyMsgList)
+    let params: WaySendMsgParams = {
+      content: content,
+      receiver: receiver
+    }
+    try {
+      let sendMsgRes = await im.sendMessage(params)
+      console.log(sendMsgRes.data)
+      rs.historyMsgList = [sendMsgRes.data, ...rs.historyMsgList]
+      return {
+        statusCode: 0,
+        msg: sendMsgRes.data
+      } as HandlerResponse
+    } catch (e) {
+      return {
+        statusCode: -1,
+        msg: e
+      } as HandlerResponse
+    }
+
+  }
+  const checkCurrentCve = (c1: WayConversationItem | null, c2: WayConversationItem) => {
+    if (c1 == null) {
+      return false
+    }
+    if (c1.conversationID == c2.conversationID) {
+      return true
+    }
+    return false
+  }
+  const addNewConvHandler = async (chainId: number, addr: string): Promise<HandlerResponse> => {
+    let receiver: WayID = {
+      network: chainId.toString(),
+      type: 1,
+      address: addr
+    }
+    let params: convParams = {
+      receiver
+    }
+    try {
+      let res = await im.initConversation(params)
+      //success
+      //TODO: should implement type guard for res.data
+      dispatch(addCve(res.data))
+      return {
+        statusCode: 0,
+        msg: "success"
+      }
+    } catch (error) {
+      //error
+      return {
+        statusCode: -1,
+        msg: error
+      }
+    }
+
+
+  }
+  useEffect(() => {
+    if (isLogin) {
+      //register callback
+
+    }
+  }, [isLogin])
+  const cveList = useAppSelector((state: RootState) => state.cves.cves, shallowEqual)
+  const { chainId, account, activate, active, library } = useWeb3React<Web3Provider>()
   return (
     <div>
       <div className='message'>
@@ -104,18 +224,10 @@ export default function Message() {
             </div>
             <div className='msg_list'>
               {
-                list.map((item, index) => <div onClick={() => {
-                  setList(data => {
-                    const newData = data.map(item => { item.checked = false; return item; }).map((item, index2) => {
-                      if (index2 == index) {
-                        item.checked = true;
-                      }
-                      return item;
-                    })
-                    return newData;
-                  });
-                  setAction(1);
-                }}><MessageItem checked={item.checked} /></div>)
+                cves.map((item, index) => <div onClick={() => {
+                  clickCveItem(item)
+
+                }}><MessageItem convItem={item} checked={checkCurrentCve(curCve, item)} /></div>)
               }
               <p><br /></p>
             </div>
@@ -123,135 +235,11 @@ export default function Message() {
           <div className='msgdetails msg-w-full msg_flex msg_flex_col'>
             {/* 新建聊天 */}
             {
-              action == 0 && <>
-                <div className='header msg_flex msg_flex_between msg_items_center msg_border_b'>
-                  <div onClick={() => setAction(1)}><ArrowLeftOutlined />&nbsp;&nbsp;&nbsp;&nbsp;Send Message</div>
-                </div>
-                {/* <div className='tokenwrap'> */}
-                <div className='msg-max-w-sm tokenwrap'>
-                  {/* <h1 className='msg-mt-8 msg-mb-4'>Create thread</h1> */}
-                  <p style={{ marginTop: '15px' }}>Select Target Chain</p>
-                  <div className='chainselect flex flex-between flex-align-center'
-                    onClick={() => setOpenChain(true)}>
-                    <div>
-                      <img style={{ width: '30px', marginRight: '20px' }} src={chainList[currentChain].icon} />
-                      <span>{chainList[currentChain].symbol}</span>
-                    </div>
-                    <SwapOutlined />
-                  </div>
-                  <p>Enter Recipient Address</p>
-                  <Input style={{ color: 'white', background: '#040000', height: '50px', border: '1px solid var(--bordercolor)' }} />
-                  {/* <p className='mst-opacity-50 msg-font-base'>Link twitter twitter.cardinal.so and domain naming.bonfida.org</p> */}
-                  <Divider className='mst-opacity-50' style={{ background: '#ffffff' }} />
-                  <div className='msg_flex msg_flex_between msg_bg_subtle_night msg-py-3 msg-px-4 msg-rounded-2xl'>
-                    <span><MessageOutlined />&nbsp;&nbsp;Off-chain</span>
-                    <Switch />
-
-                  </div>
-                  <br />
-                  <div className='msg_flex msg_flex_between msg_bg_subtle_night msg-py-3 msg-px-4 msg-rounded-2xl'>
-                    <span><UnlockOutlined />&nbsp;&nbsp;Unencrypted</span>
-                    <Switch />
-
-                  </div>
-                  <br />
-                  {/* </div> */}
-                  <Drawer
-                    bodyStyle={{
-                      background: 'var(--selectbg)'
-                    }}
-                    headerStyle={{ display: 'none' }}
-                    width="100%"
-                    height="100%"
-                    title="Basic Drawer"
-                    placement="bottom"
-                    getContainer={false}
-                    open={openChain}
-                    mask={false}
-                  >
-                    <div className='flex flex-between'>
-                      <span>Select Target Chain</span>
-                      <CloseOutlined onClick={() => setOpenChain(false)} />
-                    </div>
-                    <div className='tokenlist'>
-                      {
-                        chainList.map((item, index) => <div
-                          className='item'
-                          onClick={() => { setCurrentChain(index); setOpenChain(false); }}
-                        >
-                          <div>
-                            <img src={item.icon} style={{ marginRight: '15px' }} />
-                            <p>{item.symbol}</p>
-                          </div>
-                        </div>)
-                      }
-                    </div>
-                  </Drawer>
-                </div>
-
-                <Button style={{ width: '384px', margin: '20px auto' }} type='primary' size='large' className='cardButton'>Send Message</Button>
-
-              </>
+              action == 0 && <NewConv setAction={setAction} addNewConvHandler={addNewConvHandler} />
             }
-            {/* 聊天记录 */}
+            {/* 聊天记录 TODO:add place holder when non cve has been selected*/}
             {
-              action == 1 && <>
-                <div className='header msg_flex msg_flex_between msg_items_center msg_border_b'>
-                  <HeadImg data={list} />
-                  <div><SettingOutlined /></div>
-                </div>
-                <div className='detail_list msg_flex msg-flex-col-reverse'>
-                  {
-                    list.map((item, index) => <DetailItem />)
-                  }
-
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem self />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem /><DetailItem self /><DetailItem self /><DetailItem self /><DetailItem self />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                </div>
-                <div style={{ padding: '10px' }}>
-                  <TextArea
-                    placeholder=""
-                    autoSize={{ minRows: 1, maxRows: 6 }}
-                  />
-                  {/* <Input style={{ height: twoHeight && '44px' || '30px', transition: 'all 0.1s' }} onFocus={() => settwoHeight(true)} onBlur={() => settwoHeight(false)} /> */}
-                  <p>0/100</p>
-                </div>
-              </>
+              (action == 1 && curCve !== null) && <ChatFeed curCve={curCve} msgList={rs.historyMsgList} handleSendMsg={sendMsgHandler} />
             }
 
           </div>

@@ -3,15 +3,21 @@ import { Button, Card, InputNumber, Input } from 'antd';
 import { Menu, Space } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { WayID } from 'way-sdk-test/dist/types';
 
-export default function MessageItem(props) {
+export type HeadImgProps = {
+  id: WayID
+  faceUrl: string
+}
 
-  const {checked,data}=props;
+export default function MessageItem({ id }: HeadImgProps) {
+
+
   // useEffect(()=>{
 
   // },)
   return (
-    <div className='msg_overflow_hidden msg_shrink_0' style={{fontSize:'12px'}}>
+    <div className='msg_overflow_hidden msg_shrink_0' style={{ fontSize: '12px' }}>
       <div className='msg_flex msg_items_center  msg-py-2 msg-px-4'>
         <div className='msg_flex'>
           <div className='msg_flex msg_bg_neutral_900 msg-rounded-full msg-w-12 msg-h-12 msg_items_center msg-justify-center'>
@@ -23,15 +29,10 @@ export default function MessageItem(props) {
         <div className='msg_flex msg-grow msg_flex_between msg-pr-2 msg-truncate'>
           <div className='msg-truncate msg-flex-col msg-max-w-full'>
             <div>
-              <div>{data.map((item,index)=>{
-                if(item.checked){
-                  return index;
-                }
-
-              })}</div>
+              <div>{id.address}</div>
             </div>
             <div className='msg-truncate'>
-            <LockOutlined />
+              <LockOutlined />
             </div>
           </div>
         </div>
