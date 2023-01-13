@@ -5,7 +5,8 @@ import cbridge from '../assets/cbridge.png'
 import sendFinance from '@/assets/Base.svg'
 import { ReactComponent as Dark } from '@/assets/dark.svg'
 import { ReactComponent as Light } from '@/assets/light.svg'
-import { ReactComponent as Logo } from '@/assets/logo.svg'
+import Logo from '@/assets/logo.svg'
+import LogoBlue from '@/assets/logoblue.svg'
 import Tabs from './Tabs';
 import './index.less'
 import { im } from '@/utils';
@@ -155,8 +156,7 @@ export default function Header() {
 
       <div className='left' style={{ display: 'flex', alignItems: 'center' }}>
         {/* <img src={sendFinance} className='topImage' ></img> */}
-        <Logo className='topImage' />
-
+        <img src={!dark&&Logo||LogoBlue} className='topImage'/>
         {/* <Button className='btn'>1</Button>
                     <Button className='btn'>1</Button>
                     <Button className='btn'>1</Button> */}
