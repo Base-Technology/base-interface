@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { WayConversationItem, WayID } from "way-sdk-test/dist/types";
+import { WayConversationItem, WayID } from "@way-network/way-im/dist/types";
 import { RootState } from "..";
 import { SET_LOGIN_STATUS, SET_IDENTITY, UserActionTypes, UserState } from "../types/user";
 

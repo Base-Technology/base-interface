@@ -1,7 +1,7 @@
 import { ArrowLeftOutlined, CloseOutlined, MessageOutlined, SwapOutlined, UnlockOutlined } from "@ant-design/icons";
 import { Button, Divider, Drawer, Input, Switch } from "antd";
 import { useState } from "react";
-import { OpResponse } from "way-sdk-test/dist/types";
+import { OpResponse } from "@way-network/way-im/dist/types";
 import { HandlerResponse } from ".";
 
 type NewConvProps = {

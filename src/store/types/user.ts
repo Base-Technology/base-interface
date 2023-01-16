@@ -1,4 +1,4 @@
-import { WayID } from 'way-sdk-test/dist/types'
+import { WayID } from '@way-network/way-im/dist/types'
 
 export type UserState = {
     identity: WayID

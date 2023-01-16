@@ -3,11 +3,11 @@ import { Button, Card, InputNumber, Input } from 'antd';
 import { Menu, Space } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import { WayMessageItem } from 'way-sdk-test/dist/types';
+import { WayMessageItem } from '@way-network/way-im/dist/types';
 import { useAppSelector } from '@/utils/hook';
 import { Root } from 'react-dom/client';
 import { RootState } from '@/store';
-import { wayIDToUserID } from 'way-sdk-test';
+import { wayIDToUserID } from '@way-network/way-im';
 
 type DetailItemProps = {
   msg: WayMessageItem

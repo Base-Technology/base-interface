@@ -14,7 +14,7 @@ import { InjectedConnector } from '@web3-react/injected-connector';
 import { useWeb3React } from '@web3-react/core';
 import { Web3Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
-import { WayInitConfig, WayLoginParams } from 'way-sdk-test/dist/types';
+import { WayInitConfig, WayLoginParams } from '@way-network/way-im/dist/types';
 import { APPSERVER, IMURL } from '@/config';
 import { RootState } from '@/store';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
@@ -36,7 +36,6 @@ export default function Header() {
   }, [chainId])
   useEffect(() => {
     //login once here!
-
     let initConfig = sessionStorage.getItem("wayInitConfig")
     if (initConfig == null) {
       return
@@ -156,7 +155,7 @@ export default function Header() {
 
       <div className='left' style={{ display: 'flex', alignItems: 'center' }}>
         {/* <img src={sendFinance} className='topImage' ></img> */}
-        <img src={!dark&&Logo||LogoBlue} className='topImage'/>
+        <img src={!dark && Logo || LogoBlue} className='topImage' />
         {/* <Button className='btn'>1</Button>
                     <Button className='btn'>1</Button>
                     <Button className='btn'>1</Button> */}

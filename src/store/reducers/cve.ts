@@ -1,6 +1,6 @@
 import { im } from "@/utils";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { WayConversationItem } from "way-sdk-test/dist/types";
+import { WayConversationItem } from "@way-network/way-im/dist/types";
 import { RootState } from "..";
 import { CveState, DisplayConversationItem } from "../types/cve";
 
@@ -41,7 +41,7 @@ export const cveSlice = createSlice({
                 return true
             })]
         },
-        markReadCve: (state, action: PayloadAction<WayConversationItem>) => {
+        updateOneCve: (state, action: PayloadAction<WayConversationItem>) => {
             state.cves = state.cves.map((v, i) => {
                 if (v.conversationID == action.payload.conversationID) {
                     return action.payload
@@ -66,7 +66,7 @@ const convertFunc = (cs: WayConversationItem[]): DisplayConversationItem[] => {
     return res
 }
 
-export const { setCveList, setCurCve, addCve, updateCve, markReadCve } = cveSlice.actions
+export const { setCveList, setCurCve, addCve, updateCve, updateOneCve } = cveSlice.actions
 export const selectCveList = (state: RootState) => state.cves.cves
 
 export const cveReducer = cveSlice.reducer

@@ -3,7 +3,7 @@ import { Button, Card, InputNumber, Input } from 'antd';
 import { Menu, Space } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import { WayID } from 'way-sdk-test/dist/types';
+import { WayID } from '@way-network/way-im/dist/types';
 
 export type HeadImgProps = {
   id: WayID

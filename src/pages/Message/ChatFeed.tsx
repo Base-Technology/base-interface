@@ -2,7 +2,7 @@ import { SettingOutlined } from "@ant-design/icons";
 import { Button, Input } from "antd";
 import TextArea from "antd/lib/input/TextArea";
 import { KeyboardEvent, useState } from "react";
-import { WayConversationItem, WayID, WayMessageItem } from "way-sdk-test/dist/types";
+import { WayConversationItem, WayID, WayMessageItem } from "@way-network/way-im/dist/types";
 import { HandlerResponse, ReactiveState } from ".";
 import DetailItem from "./DetailItem";
 import HeadImg from "./HeadImg";

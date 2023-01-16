@@ -4,7 +4,7 @@ import { Menu, Space } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { DisplayConversationItem } from '@/store/types/cve';
-import { WayConversationItem, WayMessageItem } from 'way-sdk-test/dist/types';
+import { WayConversationItem, WayMessageItem } from '@way-network/way-im/dist/types';
 
 type MessageItemProps = {
   convItem: WayConversationItem

@@ -1,6 +1,6 @@
 import { im } from "@/utils";
 import { Dispatch } from "redux";
-import { WayConversationItem } from "way-sdk-test/dist/types";
+import { WayConversationItem } from "@way-network/way-im/dist/types";
 import { setCveList } from "../reducers/cve";
 
 

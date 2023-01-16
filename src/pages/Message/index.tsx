@@ -14,9 +14,9 @@ import ChatFeed from './ChatFeed';
 import NewConv from './NewConv';
 import { im } from '@/utils';
 import { convParams, GetHistoryMsgConfig, OpResponse, WayConversationItem, WayID, WayInitConfig, WayMessageItem, WaySendMsgParams } from 'way-sdk-test/dist/types';
-import { addCve, markReadCve, setCurCve, updateCve } from '@/store/reducers/cve';
+import { addCve, updateOneCve, setCurCve, updateCve } from '@/store/reducers/cve';
 import { useReactive, useRequest } from 'ahooks';
-import { WayCbEvents, wayIDToUserID } from 'way-sdk-test';
+import { WayCbEvents, wayIDToUserID } from '@way-network/way-im';
 
 export type HandlerResponse = {
   statusCode: number
@@ -132,7 +132,7 @@ export default function Message() {
       let markRes = await im.markAsRead(cve.receiver)
       if (markRes.errCode == 0) {
         let conv = await im.getOneConversation(cve.receiver)
-        dispatch(markReadCve(conv.data))
+        dispatch(updateOneCve(conv.data))
       }
     } catch (e) {
       console.log(e)
@@ -152,6 +152,15 @@ export default function Message() {
       let sendMsgRes = await im.sendMessage(params)
       console.log(sendMsgRes.data)
       rs.historyMsgList = [sendMsgRes.data, ...rs.historyMsgList]
+      try {
+        let conv = await im.getOneConversation(receiver)
+        dispatch(updateOneCve(conv.data))
+      } catch (e) {
+        return {
+          statusCode: -1,
+          msg: e
+        } as HandlerResponse
+      }
       return {
         statusCode: 0,
         msg: sendMsgRes.data
@@ -162,6 +171,7 @@ export default function Message() {
         msg: e
       } as HandlerResponse
     }
+
 
   }
   const checkCurrentCve = (c1: WayConversationItem | null, c2: WayConversationItem) => {

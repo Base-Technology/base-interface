@@ -2079,6 +2079,14 @@
     react-refresh "^0.11.0"
     resolve "^1.22.0"
 
+"@way-network/way-im@^1.0.8":
+  version "1.0.8"
+  resolved "https://registry.npmmirror.com/@way-network/way-im/-/way-im-1.0.8.tgz#9c66989361b5b89ea521b1a023396d34a57ef03c"
+  integrity sha512-XRyEqEJZVFhw9DM+bljzrqR+ZjMSpe6yDoZhYlQPa2GVzgR/WEya6zgBQZ6lFvPCnafx0xFwjfujjHhcSZvQmA==
+  dependencies:
+    axios "^0.27.2"
+    open-im-sdk "^2.3.0-beta.2"
+
 "@web3-react/abstract-connector@^6.0.7":
   version "6.0.7"
   resolved "https://registry.npmmirror.com/@web3-react/abstract-connector/-/abstract-connector-6.0.7.tgz#401b3c045f1e0fab04256311be49d5144e9badc6"
@@ -7178,13 +7186,7 @@ warning@^4.0.3:
     loose-envify "^1.0.0"
 
 "way-sdk-test@file:../way-sdk":
-  version "1.0.6"
-  dependencies:
-    axios "^0.27.2"
-    open-im-sdk "^2.3.0-beta.2"
-
-"way-sdk-test@file:../way-sdk/":
-  version "1.0.6"
+  version "1.0.8"
   dependencies:
     axios "^0.27.2"
     open-im-sdk "^2.3.0-beta.2"
