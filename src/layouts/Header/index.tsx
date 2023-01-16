@@ -36,20 +36,37 @@ export default function Header() {
   }, [chainId])
   useEffect(() => {
     //login once here!
+    if (!active) {
+      console.log('not active return')
+      return
+    }
     let initConfig = sessionStorage.getItem("wayInitConfig")
     if (initConfig == null) {
+      console.log('no init config')
       return
 
     }
 
+
     let config = JSON.parse(initConfig) as WayInitConfig
-    im.loginWay(config).then((resLog) => {
-      console.log(resLog)
-      dispatch(setLoginStatus(true))
-      dispatch(getCveList())
-      dispatch(setIdentity(im.getWayID()))
+    let signer = library?.getSigner()
+    let addr = ""
+    signer?.getAddress().then((addr) => {
+      if (config.loginParams.senderAddress != addr?.toLowerCase()) {
+        console.log('not lowercase')
+        return
+      }
+      im.loginWay(config).then((resLog) => {
+        console.log(resLog)
+        dispatch(setLoginStatus(true))
+        dispatch(getCveList())
+        dispatch(setIdentity(im.getWayID()))
+      }).catch(e => {
+        console.log("default login")
+        console.log(e)
+      })
     }).catch(e => {
-      console.log("default login")
+      console.log("signer get address error")
       console.log(e)
     })
   }, [])
@@ -77,7 +94,7 @@ export default function Header() {
     //console.log("loggin in")
     let loginParams: WayLoginParams = {
       signature: signature,
-      senderAddress: addr,
+      senderAddress: addr.toLowerCase(),
       network: networkId.toString()
     }
 

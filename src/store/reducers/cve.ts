@@ -31,6 +31,7 @@ export const cveSlice = createSlice({
             state.curCve = action.payload
         },
         addCve: (state, action: PayloadAction<WayConversationItem>) => {
+            console.log("addcve", state.cves, action.payload)
             state.cves = [...state.cves, action.payload]
         },
         updateCve: (state, action: PayloadAction<WayConversationItem>) => {

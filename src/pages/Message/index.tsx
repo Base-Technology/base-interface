@@ -13,7 +13,7 @@ import { useAppDispatch, useAppSelector } from '@/utils/hook';
 import ChatFeed from './ChatFeed';
 import NewConv from './NewConv';
 import { im } from '@/utils';
-import { convParams, GetHistoryMsgConfig, OpResponse, WayConversationItem, WayID, WayInitConfig, WayMessageItem, WaySendMsgParams } from 'way-sdk-test/dist/types';
+import { convParams, GetHistoryMsgConfig, OpResponse, WayConversationItem, WayID, WayInitConfig, WayMessageItem, WaySendMsgParams } from '@way-network/way-im/dist/types';
 import { addCve, updateOneCve, setCurCve, updateCve } from '@/store/reducers/cve';
 import { useReactive, useRequest } from 'ahooks';
 import { WayCbEvents, wayIDToUserID } from '@way-network/way-im';
@@ -129,6 +129,7 @@ export default function Message() {
   }
   async function markCveHasRead(cve: WayConversationItem) {
     try {
+      console.log("mark cve", cve.receiver)
       let markRes = await im.markAsRead(cve.receiver)
       if (markRes.errCode == 0) {
         let conv = await im.getOneConversation(cve.receiver)
@@ -187,7 +188,7 @@ export default function Message() {
     let receiver: WayID = {
       network: chainId.toString(),
       type: 1,
-      address: addr
+      address: addr.toLowerCase()
     }
     let params: convParams = {
       receiver
@@ -196,6 +197,8 @@ export default function Message() {
       let res = await im.initConversation(params)
       //success
       //TODO: should implement type guard for res.data
+      console.log(cves)
+      console.log("init conv", res)
       dispatch(addCve(res.data))
       return {
         statusCode: 0,
@@ -217,8 +220,6 @@ export default function Message() {
 
     }
   }, [isLogin])
-  const cveList = useAppSelector((state: RootState) => state.cves.cves, shallowEqual)
-  const { chainId, account, activate, active, library } = useWeb3React<Web3Provider>()
   return (
     <div>
       <div className='message'>
@@ -237,7 +238,7 @@ export default function Message() {
                 cves.map((item, index) => <div onClick={() => {
                   clickCveItem(item)
 
-                }}><MessageItem convItem={item} checked={checkCurrentCve(curCve, item)} /></div>)
+                }}><MessageItem key={index} convItem={item} checked={checkCurrentCve(curCve, item)} /></div>)
               }
               <p><br /></p>
             </div>
