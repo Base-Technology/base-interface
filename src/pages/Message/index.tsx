@@ -3,72 +3,38 @@ import { Button, Card, InputNumber, Input, Divider, Switch, Drawer } from 'antd'
 import { Menu, Space } from 'antd';
 import { EditOutlined, SettingOutlined, TeamOutlined, PlusOutlined, ArrowLeftOutlined, MessageOutlined, UnlockOutlined, SearchOutlined, CloseOutlined, SwapOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { get, post } from '@/utils/request';
 import MessageItem from './MessageItem';
 import DetailItem from './DetailItem';
 import HeadImg from './HeadImg';
 import './index.less';
 const { TextArea } = Input;
+const DATA = [
+  {
+    id: '1',
+    name: 'ChatGPT',
+    type: 1,
+    content: '...',
+    route: 'ChatGpt',
+    header: 'https://bf.jdd001.top/cryptologos/chatgpt.png'
+  },
+  {
+    id: '2',
+    name: '鲸馆小张',
+    type: 2,
+    content: '...',
+    header: 'https://bf.jdd001.top/cryptologos/zy.png'
+  }
+];
 export default function Message() {
 
-  const [action, setAction] = useState(0);
+  const [action, setAction] = useState(1);
+  const [current, setCurrent] = useState(0);
+  const [message, setMessage] = useState('');
   const [twoHeight, settwoHeight] = useState(false);
   const [iw, setIw] = useState(100);
   const inputRef = useRef(null);
-  const [list, setList] = useState([{
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }, {
-    checked: false,
-  }]);
+  const [list, setList] = useState(DATA);
   const [openChain, setOpenChain] = useState(false);
   const chainList = [
     {
@@ -89,6 +55,19 @@ export default function Message() {
     }
   ];
   const [currentChain, setCurrentChain] = useState(0);
+  // chatgpt问答 
+  const getChatGptMessage = () => {
+    // setMessages(data => [...data, { content: 123, is_send: 0 }]);
+    // saveDB(123, 0); 红烧肉怎么做
+    post('/api/v1/chat/chatgpt', {
+      "prompt": ''
+    }).then(response => {
+      // console.log('response',response);
+      // 保存到数据库
+      // saveDB(response.code == 0 && response.response||response.message, 0);
+
+    })
+  }
   return (
     <div>
       <div className='message'>
@@ -100,7 +79,7 @@ export default function Message() {
                   cursor: 'start',
                 });
               }} style={{ color: 'var(--messagecolor)', cursor: 'pointer' }} />} /></div>
-              <div ><TeamOutlined />&nbsp;<EditOutlined onClick={() => setAction(0)} /></div>
+              {/* <div ><TeamOutlined />&nbsp;<EditOutlined onClick={() => setAction(0)} /></div> */}
             </div>
             <div className='msg_list'>
               {
@@ -114,8 +93,8 @@ export default function Message() {
                     })
                     return newData;
                   });
-                  setAction(1);
-                }}><MessageItem checked={item.checked} /></div>)
+                  setCurrent(index);
+                }}><MessageItem data={item} /></div>)
               }
               <p><br /></p>
             </div>
@@ -197,59 +176,29 @@ export default function Message() {
             {
               action == 1 && <>
                 <div className='header msg_flex msg_flex_between msg_items_center msg_border_b'>
-                  <HeadImg data={list} />
-                  <div><SettingOutlined /></div>
+                  <HeadImg data={list[current]} />
+                  {/* <div><SettingOutlined /></div> */}
                 </div>
                 <div className='detail_list msg_flex msg-flex-col-reverse'>
-                  {
-                    list.map((item, index) => <DetailItem />)
-                  }
+
 
                   <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
                   <DetailItem self />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem /><DetailItem self /><DetailItem self /><DetailItem self /><DetailItem self />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
-                  <DetailItem />
+
                 </div>
                 <div style={{ padding: '10px' }}>
-                  <TextArea
-                    placeholder=""
-                    autoSize={{ minRows: 1, maxRows: 6 }}
-                  />
+                  <div className='flex'>
+                    <TextArea
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder=""
+                      autoSize={{ minRows: 1, maxRows: 6 }}
+                    />
+                    <Button onClick={getChatGptMessage}>发送</Button>
+                  </div>
+
                   {/* <Input style={{ height: twoHeight && '44px' || '30px', transition: 'all 0.1s' }} onFocus={() => settwoHeight(true)} onBlur={() => settwoHeight(false)} /> */}
-                  <p>0/100</p>
+                  {/* <p>0/100</p> */}
                 </div>
               </>
             }

@@ -2,7 +2,7 @@ export default {
   npmClient: "yarn",
   fastRefresh: true,
   favicons: ['/icon.svg'],
-  title:'Base Tech',
+  title:'Base 遇见·新生活',
   dva: {},
   plugins: ["@umijs/plugins/dist/dva",
     "@umijs/plugins/dist/locale",
@@ -24,4 +24,11 @@ export default {
   routes: [
     { path: '/', component: '@/pages/Message' },
   ],
+  proxy: {
+    '/api': {
+      'target': 'https://movie.jdd001.top',
+      'changeOrigin': true,
+      // 'pathRewrite': { '^/api' : '' },
+    },
+  },
 };

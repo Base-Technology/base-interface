@@ -4,9 +4,9 @@ import { Menu, Space } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 
-export default function MessageItem(props) {
+export default function MessageItem(props:any) {
 
-  const { checked } = props;
+  const { checked,data:{header,name} } = props;
   // useEffect(()=>{
 
   // },)
@@ -16,14 +16,16 @@ export default function MessageItem(props) {
         <div className='msg_flex'>
           <div className='msg_flex msg_bg_neutral_900 msg-rounded-full msg-w-14 msg-h-14 msg_items_center msg-justify-center'>
             <div className='msg-text-lg'>
-              <div className='msg-xs'>Base</div>
+              <div className='msg-xs'>
+                <img style={{width:'100%',borderRadius:'100%'}} src={header}/>
+              </div>
             </div>
           </div>
         </div>
         <div className='msg_flex msg-grow msg_flex_between msg-pr-2 msg-truncate'>
           <div className='msg-truncate msg-flex-col msg-max-w-full'>
             <div>
-              <div style={{ fontSize: '16px', fontWeight: '400' }}>doctor</div>
+              <div style={{ fontSize: '16px', fontWeight: '400' }}>{name}</div>
             </div>
             <div className='msg-truncate'>
               <div className='msg-truncate'><span style={{ display: 'inline-block', minWidth: '20px', height: '20px', borderRadius: '10px', textAlign: 'center', background: '#422DDD', padding: '0 5px', fontSize: '12px',color:'#ffffff' }}>221</span>&nbsp;you:hello</div>

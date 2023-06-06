@@ -18,6 +18,8 @@
     "@web3-react/core": "^6.1.9",
     "@web3-react/injected-connector": "^6.0.7",
     "antd": "^4.23.4",
+    "antd-img-crop": "^4.12.2",
+    "axios": "^1.4.0",
     "ethers": "^5.7.1",
     "millify": "^5.0.1",
     "umi": "^4.0.24"
